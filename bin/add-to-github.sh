@@ -221,6 +221,34 @@ add_to_sync() {
     fi
 }
 
+# ── Supprimer la copie locale (optionnel) ────────────────────────────────────
+
+offer_delete_local() {
+    local size
+    size=$(du -sh "$PROJECT_PATH" 2>/dev/null | awk '{print $1}')
+
+    echo ""
+    echo -e "${YELLOW}Ton dossier '$PROJECT_NAME' ($size) est maintenant sur GitHub.${NC}"
+    echo -e "${BOLD}Veux-tu supprimer la copie locale pour libérer de l'espace ?${NC}"
+    echo "  Tu pourras le récupérer à tout moment avec :"
+    echo -e "  ${BLUE}git clone git@github.com:$GITHUB_USER/$PROJECT_NAME.git${NC}"
+    echo ""
+    read -rp "Supprimer le dossier local ? [o/N] : " confirm
+
+    if [[ "$confirm" =~ ^[oO]$ ]]; then
+        # Retirer de la liste de sync avant de supprimer
+        grep -vxF "$PROJECT_PATH" "$PROJECTS_FILE" > /tmp/xgs_projects_tmp && \
+            mv /tmp/xgs_projects_tmp "$PROJECTS_FILE"
+        rm -rf "$PROJECT_PATH"
+        ok "Dossier supprimé — ${size} récupérés"
+        echo ""
+        echo -e "  Pour le récupérer plus tard :"
+        echo -e "  ${BLUE}git clone git@github.com:$GITHUB_USER/$PROJECT_NAME.git${NC}"
+    else
+        ok "Copie locale conservée — sync automatique actif chaque soir à ${SYNC_HOUR}h"
+    fi
+}
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 echo ""
@@ -237,7 +265,8 @@ add_to_sync
 
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-ok "Terminé ! '$PROJECT_NAME' sync chaque soir à ${SYNC_HOUR}h."
+ok "Envoyé ! '$PROJECT_NAME' est sur GitHub."
 echo -e "   ${BLUE}https://github.com/$GITHUB_USER/$PROJECT_NAME${NC}"
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
+
+offer_delete_local
