@@ -1,22 +1,38 @@
 # xcode-github-sync
 
-> Sauvegarde automatiquement n'importe quel dossier de ton Mac sur GitHub, chaque soir, sans que tu aies à faire quoi que ce soit.
+> Transfère et sauvegarde automatiquement **n'importe quel dossier** de ton Mac sur GitHub — code source, sites web, applications, documents — sans manipulation manuelle.
 
-Fonctionne avec tous types de projets : Xcode/Swift, Node, Python, fichiers design, documents…
+Tu travailles sur un site web, une app, un script, un projet perso ? Lance une commande, choisis ton dossier, et à partir de là **tout se sauvegarde tout seul chaque soir sur GitHub**.
+
+Aucun besoin de connaître git. Aucun logiciel supplémentaire. Ça fonctionne dès l'installation.
+
+---
+
+## Pour qui ?
+
+- Tu fais du développement web (HTML, CSS, JavaScript, React, Vue…)
+- Tu codes des apps iOS, Android, ou macOS
+- Tu as des scripts Python, Ruby, ou autre
+- Tu veux juste garder un dossier en sécurité en ligne
+- Tu veux partager ton code source sur GitHub
+
+**Xcode n'est pas requis.** Le nettoyage de caches Xcode est une fonctionnalité bonus qui s'active seulement si Xcode est installé.
 
 ---
 
 ## Ce que ça fait concrètement
 
-Imagine que tu travailles sur un projet. Tu fais tes modifications, tu fermes ton Mac. **À 20h chaque soir, le script se lance tout seul** en arrière-plan et envoie tous tes changements sur GitHub.
+Tu travailles sur tes projets normalement. **Chaque soir à 20h**, le script se lance tout seul en arrière-plan, enregistre tous tes changements et les envoie sur GitHub.
 
 - Tu n'ouvres pas de terminal
 - Tu ne tapes aucune commande
 - Tu ne penses à rien
 
-Si tu perds ton Mac, si tu le formates, ou si tu veux donner ton projet à quelqu'un : **tout est sur GitHub**, à jour, en sécurité.
+Si tu perds ton Mac, si tu le formates, ou si tu veux partager ton code : **tout est sur GitHub**, à jour, accessible depuis n'importe où.
 
-En bonus, **chaque dimanche à 2h du matin**, il nettoie automatiquement les caches Xcode (SwiftUI Previews, DerivedData…) qui peuvent prendre 3 à 5 GB sans servir à rien.
+### Bonus si tu as Xcode
+
+Chaque dimanche à 2h du matin, le script nettoie automatiquement les caches Xcode (SwiftUI Previews, DerivedData…) qui peuvent prendre 3 à 5 GB sans rien apporter.
 
 ---
 
@@ -24,7 +40,7 @@ En bonus, **chaque dimanche à 2h du matin**, il nettoie automatiquement les cac
 
 - Un Mac sous macOS 12 ou plus récent
 - Un compte [GitHub](https://github.com) (gratuit)
-- C'est tout — aucun logiciel supplémentaire à installer
+- C'est tout — Xcode, Homebrew, Node.js ne sont pas nécessaires
 
 ---
 
@@ -57,7 +73,7 @@ Le script te pose 4 questions :
 4. Colle la clé
 5. Clique **Add SSH key**
 
-> C'est ce qui permet à ton Mac d'envoyer des fichiers sur GitHub sans avoir à taper un mot de passe à chaque fois.
+> C'est ce qui permet à ton Mac d'envoyer des fichiers sur GitHub sans mot de passe à chaque fois.
 
 ### Étape 3 — Ajouter ton premier dossier
 
@@ -65,7 +81,7 @@ Le script te pose 4 questions :
 add-to-github.sh
 ```
 
-La première fois, le script te demande un **Personal Access Token GitHub** — c'est une clé secrète qui lui permet de créer des repos automatiquement à ta place.
+La première fois, le script te demande un **Personal Access Token GitHub** — une clé qui lui permet de créer des repos automatiquement.
 
 Pour le créer :
 1. Va sur [github.com/settings/tokens/new](https://github.com/settings/tokens/new)
@@ -74,7 +90,7 @@ Pour le créer :
 4. Coche uniquement **`repo`**
 5. Clique **Generate token** → copie le code `ghp_...`
 
-Ensuite le script te montre la liste de tes dossiers. Tu tapes le numéro du dossier que tu veux sauvegarder. Il fait tout le reste.
+Ensuite le script affiche la liste de tes dossiers. Tu choisis. Il fait tout le reste.
 
 ---
 
@@ -89,9 +105,9 @@ $ add-to-github.sh
 
 Dossiers disponibles :
 
-  1. MonAppli          /Users/toi/Desktop/MonAppli
-  2. SiteWeb           /Users/toi/Documents/SiteWeb
-  3. Stathub           /Users/toi/Desktop/Stathub  [git]
+  1. MonSiteWeb        /Users/toi/Desktop/MonSiteWeb
+  2. AppReact          /Users/toi/Documents/AppReact
+  3. MonAppIOS         /Users/toi/Desktop/MonAppIOS
   4. Entrer un chemin manuellement
 
 Choix : 1
@@ -102,18 +118,18 @@ Quel type de projet ?
   3. Python
   4. Basique (macOS seulement)
 
-Choix : 1
+Choix : 2
 
 ✓ Git initialisé
 ✓ .gitignore créé
 ✓ Commit initial
-✓ Repo créé (private) → github.com/toi/MonAppli
+✓ Repo créé (private) → github.com/toi/MonSiteWeb
 ✓ Push réussi
 ✓ Ajouté au sync quotidien
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✓ Terminé ! 'MonAppli' sync chaque soir à 20h.
-   https://github.com/toi/MonAppli
+✓ Terminé ! 'MonSiteWeb' sync chaque soir à 20h.
+   https://github.com/toi/MonSiteWeb
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -128,7 +144,7 @@ add-to-github.sh
 # Forcer un sync maintenant sans attendre 20h
 github-sync.sh
 
-# Nettoyer les caches Xcode maintenant
+# Nettoyer les caches Xcode (si Xcode est installé)
 xcode-cleanup.sh
 
 # Voir l'historique des syncs
@@ -137,6 +153,18 @@ cat ~/Library/Logs/xcode-github-sync.log
 # Vérifier que la synchro automatique tourne bien
 launchctl list | grep github-sync
 ```
+
+---
+
+## Types de projets supportés
+
+| Type | .gitignore inclus | Exemples |
+|---|---|---|
+| Xcode / Swift | ✅ | Apps iOS, macOS, visionOS |
+| Node / JavaScript | ✅ | Sites web, React, Vue, Next.js |
+| Python | ✅ | Scripts, Flask, Django, ML |
+| Basique | ✅ | N'importe quel autre dossier |
+| Existant | — | Conserve ton .gitignore actuel |
 
 ---
 
@@ -153,10 +181,10 @@ Supprime les scripts et les tâches planifiées. Tes dossiers et repos GitHub ne
 
 ## Pourquoi c'est fiable
 
-- **SSH** : la clé d'authentification ne expire jamais, zéro maintenance
-- **launchd** : le gestionnaire de tâches natif de macOS, redémarre avec le Mac
+- **SSH** : authentification qui n'expire jamais, zéro maintenance
+- **launchd** : gestionnaire de tâches natif macOS, redémarre avec le Mac
 - **Pas de dépendances** : bash pur, rien à installer, rien à mettre à jour
-- **Open source** : le code est visible, modifiable, gratuit pour toujours
+- **Open source** : code visible, modifiable, gratuit pour toujours
 
 ---
 
