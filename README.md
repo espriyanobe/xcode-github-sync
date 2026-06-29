@@ -1,149 +1,165 @@
 # xcode-github-sync
 
-Automatically back up **any folder** on your Mac to GitHub and keep your disk clean — no manual effort, no tokens to renew, runs silently in the background.
+> Sauvegarde automatiquement n'importe quel dossier de ton Mac sur GitHub, chaque soir, sans que tu aies à faire quoi que ce soit.
 
-Works with any kind of project: Xcode/Swift, Node, Python, design files, documents — anything.
-
-**Made for Mac users who want their work safe on GitHub without thinking about it.**
+Fonctionne avec tous types de projets : Xcode/Swift, Node, Python, fichiers design, documents…
 
 ---
 
-## What it does
+## Ce que ça fait concrètement
 
-| Feature | Detail |
-|---|---|
-| **Auto-push** | Commits and pushes any folder to GitHub every evening |
-| **Auto-cleanup** | Purges Xcode caches (SwiftUI Previews, Derived Data…) every Sunday |
-| **One command** to add a folder | Interactive picker, repo created automatically on GitHub |
-| **Any project type** | Xcode, Node, Python, or plain folders — you choose the .gitignore |
-| **No dependencies** | Pure bash + macOS launchd — no Homebrew, no Node, no Python |
-| **Never expires** | SSH key authentication — no token renewal |
+Imagine que tu travailles sur un projet. Tu fais tes modifications, tu fermes ton Mac. **À 20h chaque soir, le script se lance tout seul** en arrière-plan et envoie tous tes changements sur GitHub.
 
----
+- Tu n'ouvres pas de terminal
+- Tu ne tapes aucune commande
+- Tu ne penses à rien
 
-## Requirements
+Si tu perds ton Mac, si tu le formates, ou si tu veux donner ton projet à quelqu'un : **tout est sur GitHub**, à jour, en sécurité.
 
-- macOS 12+
-- Xcode installed
-- A [GitHub account](https://github.com)
+En bonus, **chaque dimanche à 2h du matin**, il nettoie automatiquement les caches Xcode (SwiftUI Previews, DerivedData…) qui peuvent prendre 3 à 5 GB sans servir à rien.
 
 ---
 
-## Installation
+## Prérequis
+
+- Un Mac sous macOS 12 ou plus récent
+- Un compte [GitHub](https://github.com) (gratuit)
+- C'est tout — aucun logiciel supplémentaire à installer
+
+---
+
+## Installation — 3 étapes
+
+### Étape 1 — Télécharger le projet
+
+Ouvre le **Terminal** (cherche "Terminal" dans Spotlight avec `Cmd + Espace`) et colle ces deux lignes :
 
 ```bash
 git clone https://github.com/espriyanobe/xcode-github-sync.git
-cd xcode-github-sync
-chmod +x install.sh
-./install.sh
+cd xcode-github-sync && ./install.sh
 ```
 
-The installer will ask for:
-- Your GitHub username
-- Your email (for git commits)
-- Your name (for git commits)
-- What time to run the daily sync (default: 8 PM)
+Le script te pose 4 questions :
+- Ton nom d'utilisateur GitHub (ex: `johndoe`)
+- Ton adresse email (pour identifier tes commits)
+- Ton prénom ou pseudo
+- L'heure du sync quotidien (laisse vide pour garder 20h par défaut)
 
-At the end, it shows your SSH public key — **copy it and add it on [github.com/settings/keys](https://github.com/settings/keys)**.
+### Étape 2 — Ajouter ta clé SSH sur GitHub
 
----
+À la fin de l'installation, le script affiche une longue ligne qui commence par `ssh-ed25519 AAAA...`
 
-## Adding a folder
+**Copie cette ligne entière**, puis :
+
+1. Va sur [github.com/settings/keys](https://github.com/settings/keys)
+2. Clique **New SSH key**
+3. Titre : `Mon Mac`
+4. Colle la clé
+5. Clique **Add SSH key**
+
+> C'est ce qui permet à ton Mac d'envoyer des fichiers sur GitHub sans avoir à taper un mot de passe à chaque fois.
+
+### Étape 3 — Ajouter ton premier dossier
 
 ```bash
 add-to-github.sh
 ```
 
-First time only: it asks for a [GitHub Personal Access Token](https://github.com/settings/tokens/new) (scope: `repo`, no expiration) to create repos automatically.
+La première fois, le script te demande un **Personal Access Token GitHub** — c'est une clé secrète qui lui permet de créer des repos automatiquement à ta place.
 
-The script then:
-1. Shows all your folders (Desktop, Documents, Developer…) — pick one
-2. Asks what type of project it is (Xcode, Node, Python, or basic)
-3. Initializes git + creates the right `.gitignore`
-4. Creates a **private** repo on GitHub
-5. Pushes your files
-6. Adds the folder to the nightly sync list
+Pour le créer :
+1. Va sur [github.com/settings/tokens/new](https://github.com/settings/tokens/new)
+2. Note : `xcode-github-sync`
+3. Expiration : **No expiration**
+4. Coche uniquement **`repo`**
+5. Clique **Generate token** → copie le code `ghp_...`
+
+Ensuite le script te montre la liste de tes dossiers. Tu tapes le numéro du dossier que tu veux sauvegarder. Il fait tout le reste.
 
 ---
 
-## Daily commands
+## Comment ça se passe concrètement
+
+```
+$ add-to-github.sh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Add to GitHub
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dossiers disponibles :
+
+  1. MonAppli          /Users/toi/Desktop/MonAppli
+  2. SiteWeb           /Users/toi/Documents/SiteWeb
+  3. Stathub           /Users/toi/Desktop/Stathub  [git]
+  4. Entrer un chemin manuellement
+
+Choix : 1
+
+Quel type de projet ?
+  1. Xcode / Swift
+  2. Node / JavaScript
+  3. Python
+  4. Basique (macOS seulement)
+
+Choix : 1
+
+✓ Git initialisé
+✓ .gitignore créé
+✓ Commit initial
+✓ Repo créé (private) → github.com/toi/MonAppli
+✓ Push réussi
+✓ Ajouté au sync quotidien
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Terminé ! 'MonAppli' sync chaque soir à 20h.
+   https://github.com/toi/MonAppli
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## Commandes utiles
 
 ```bash
-# Force a sync right now
+# Ajouter un nouveau dossier à GitHub
+add-to-github.sh
+
+# Forcer un sync maintenant sans attendre 20h
 github-sync.sh
 
-# Clean Xcode caches right now (~3-5 GB freed)
+# Nettoyer les caches Xcode maintenant
 xcode-cleanup.sh
 
-# Check that background tasks are running
+# Voir l'historique des syncs
+cat ~/Library/Logs/xcode-github-sync.log
+
+# Vérifier que la synchro automatique tourne bien
 launchctl list | grep github-sync
-
-# Watch the logs
-tail -f ~/Library/Logs/xcode-github-sync.log
 ```
 
 ---
 
-## What gets cleaned (every Sunday at 2 AM)
-
-| Folder | What it is | Safe to delete? |
-|---|---|---|
-| `UserData/Previews` | SwiftUI preview cache | ✅ Yes — regenerated on demand |
-| `DerivedData` | Build artifacts | ✅ Yes — regenerated on build |
-| `Caches/com.apple.dt.Xcode` | Xcode cache | ✅ Yes |
-| `DeviceLogs` (> 30 days) | Old debug logs | ✅ Yes |
-| Unavailable simulators | Old iOS runtimes | ✅ Yes |
-
-**Never touched:** your source code, Archives, Provisioning Profiles, SSH keys.
-
----
-
-## How it works
-
-```
-macOS launchd
-├── Every day at 8 PM  →  github-sync.sh
-│                            reads ~/.config/xcode-github-sync/projects
-│                            git add . && git commit && git push (SSH)
-│
-└── Every Sunday 2 AM  →  xcode-cleanup.sh
-                             deletes regenerable Xcode cache folders
-```
-
-Authentication uses your SSH key — it never expires and requires no interaction.
-
----
-
-## File structure
-
-```
-~/.config/xcode-github-sync/
-├── config      # GitHub username, email, sync hour
-├── projects    # One project path per line
-└── token       # GitHub PAT (chmod 600, used only to create repos)
-
-~/.local/bin/
-├── add-to-github.sh
-├── github-sync.sh
-└── xcode-cleanup.sh
-
-~/Library/LaunchAgents/
-├── com.<username>.github-sync.plist
-└── com.<username>.xcode-cleanup.plist
-```
-
----
-
-## Uninstall
+## Désinstaller
 
 ```bash
+cd xcode-github-sync
 ./uninstall.sh
 ```
 
-Removes scripts, LaunchAgents, and config. Your projects and GitHub repos are untouched.
+Supprime les scripts et les tâches planifiées. Tes dossiers et repos GitHub ne sont pas touchés.
+
+---
+
+## Pourquoi c'est fiable
+
+- **SSH** : la clé d'authentification ne expire jamais, zéro maintenance
+- **launchd** : le gestionnaire de tâches natif de macOS, redémarre avec le Mac
+- **Pas de dépendances** : bash pur, rien à installer, rien à mettre à jour
+- **Open source** : le code est visible, modifiable, gratuit pour toujours
 
 ---
 
 ## License
 
-MIT — free to use, share, and modify.
+MIT — libre d'utilisation, de partage et de modification.
