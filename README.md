@@ -4,6 +4,8 @@
 
 Tu travailles sur un site web, une app, un script, un projet perso ? Lance une commande, choisis ton dossier, et à partir de là **tout se sauvegarde tout seul chaque soir sur GitHub**.
 
+Une fois ton projet en sécurité sur GitHub, **tu peux supprimer ta copie locale pour libérer de l'espace sur ton Mac**. Si tu en as besoin à nouveau, tu le retélécharges en une commande. C'est particulièrement utile pour les projets Xcode qui peuvent peser plusieurs gigaoctets à cause des caches générés automatiquement.
+
 Aucun besoin de connaître git. Aucun logiciel supplémentaire. Ça fonctionne dès l'installation.
 
 ---
@@ -29,6 +31,16 @@ Tu travailles sur tes projets normalement. **Chaque soir à 20h**, le script se 
 - Tu ne penses à rien
 
 Si tu perds ton Mac, si tu le formates, ou si tu veux partager ton code : **tout est sur GitHub**, à jour, accessible depuis n'importe où.
+
+### Libérer de l'espace sur ton Mac
+
+C'est l'un des usages les plus puissants de cet outil. Une fois un projet envoyé sur GitHub, **tu peux supprimer le dossier local** pour récupérer de l'espace disque. Quand tu en as besoin, tu le retélécharges :
+
+```bash
+git clone git@github.com:tonusername/tonprojet.git
+```
+
+Les projets Xcode sont particulièrement gourmands : entre les caches, les previews SwiftUI et les fichiers de build, un seul projet peut occuper **5 à 10 GB**. En les gardant sur GitHub plutôt que sur ton Mac, tu gardes ton disque libre.
 
 ### Bonus si tu as Xcode
 
