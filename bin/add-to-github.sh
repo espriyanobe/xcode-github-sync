@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ajoute un dossier local à GitHub et à l'auto-sync.
+# Ajoute n'importe quel dossier local à GitHub et à l'auto-sync.
 
 set -euo pipefail
 
@@ -16,32 +16,43 @@ info() { echo -e "${BLUE}→${NC} $*"; }
 warn() { echo -e "${YELLOW}!${NC} $*"; }
 err()  { echo -e "${RED}✗${NC} $*"; exit 1; }
 
-GITIGNORE_XCODE='# Build artifacts
+GITIGNORE_TEMPLATES=(
+    "Xcode / Swift"
+    "Node / JavaScript"
+    "Python"
+    "Basique (macOS seulement)"
+)
+
+GITIGNORE_XCODE='# Xcode
 build/
 DerivedData/
-*.o
-*.a
-*.dylib
-*.dSYM/
-
-# Xcode user data
 *.xcuserstate
 xcuserdata/
-*.xcscmblueprint
-
-# SwiftPM
+*.dSYM/
 .build/
 .swiftpm/xcworkspace
-
-# macOS
-.DS_Store
-*.icloud
-
-# Secrets — never commit
 *.p12
-*.mobileprovision
-*.cer
-*.entitlements'
+*.mobileprovision'
+
+GITIGNORE_NODE='node_modules/
+dist/
+.env
+.env.local
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*'
+
+GITIGNORE_PYTHON='__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/'
+
+GITIGNORE_BASIC=''
 
 # ── Token ─────────────────────────────────────────────────────────────────────
 
@@ -71,10 +82,14 @@ pick_folder() {
     echo ""
 
     mapfile -t FOLDERS < <(
-        find ~/Desktop ~/Documents ~/Developer ~/Projects 2>/dev/null \
-            -maxdepth 2 -mindepth 1 -type d \
-            ! -path "*/.git/*" ! -path "*/DerivedData/*" \
-            ! -path "*/.Trash/*" ! -name ".*" \
+        find ~/Desktop ~/Documents ~/Developer ~/Projects ~/Downloads 2>/dev/null \
+            -maxdepth 3 -mindepth 1 -type d \
+            ! -path "*/.git/*" \
+            ! -path "*/DerivedData/*" \
+            ! -path "*/node_modules/*" \
+            ! -path "*/__pycache__/*" \
+            ! -path "*/.Trash/*" \
+            ! -name ".*" \
             2>/dev/null | sort -u
     )
 
@@ -98,10 +113,39 @@ pick_folder() {
 
     [ -d "$PROJECT_PATH" ] || err "Dossier introuvable : $PROJECT_PATH"
     PROJECT_NAME=$(basename "$PROJECT_PATH")
-    ok "Projet : $PROJECT_NAME"
+    ok "Dossier : $PROJECT_NAME"
 }
 
 # ── Git init ──────────────────────────────────────────────────────────────────
+
+pick_gitignore() {
+    if [ -f "$PROJECT_PATH/.gitignore" ]; then
+        ok ".gitignore existant conservé"
+        GITIGNORE_CONTENT=""
+        return
+    fi
+
+    echo ""
+    echo -e "${BOLD}Quel type de projet ?${NC}"
+    for i in "${!GITIGNORE_TEMPLATES[@]}"; do
+        echo "  $((i+1)). ${GITIGNORE_TEMPLATES[$i]}"
+    done
+    echo ""
+    read -rp "Choix [1-${#GITIGNORE_TEMPLATES[@]}] : " tpl_choice
+
+    case "$tpl_choice" in
+        1) GITIGNORE_CONTENT="$GITIGNORE_XCODE"  ;;
+        2) GITIGNORE_CONTENT="$GITIGNORE_NODE"   ;;
+        3) GITIGNORE_CONTENT="$GITIGNORE_PYTHON" ;;
+        *) GITIGNORE_CONTENT="$GITIGNORE_BASIC"  ;;
+    esac
+
+    # .DS_Store toujours ignoré
+    GITIGNORE_CONTENT="$GITIGNORE_CONTENT
+# macOS
+.DS_Store
+*.icloud"
+}
 
 setup_git() {
     cd "$PROJECT_PATH"
@@ -113,9 +157,11 @@ setup_git() {
         ok "Git déjà initialisé"
     fi
 
-    if [ ! -f ".gitignore" ]; then
-        echo "$GITIGNORE_XCODE" > .gitignore
-        ok ".gitignore Xcode créé"
+    pick_gitignore
+
+    if [ -n "$GITIGNORE_CONTENT" ]; then
+        echo "$GITIGNORE_CONTENT" > .gitignore
+        ok ".gitignore créé"
     fi
 
     git add .

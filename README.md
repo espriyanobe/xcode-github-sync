@@ -1,8 +1,10 @@
 # xcode-github-sync
 
-Automatically back up your Xcode projects to GitHub and keep your Mac clean — no manual effort, no tokens to renew, runs silently in the background.
+Automatically back up **any folder** on your Mac to GitHub and keep your disk clean — no manual effort, no tokens to renew, runs silently in the background.
 
-**Made for Mac developers who want their projects safe on GitHub without thinking about it.**
+Works with any kind of project: Xcode/Swift, Node, Python, design files, documents — anything.
+
+**Made for Mac users who want their work safe on GitHub without thinking about it.**
 
 ---
 
@@ -10,9 +12,10 @@ Automatically back up your Xcode projects to GitHub and keep your Mac clean — 
 
 | Feature | Detail |
 |---|---|
-| **Auto-push** | Commits and pushes your projects to GitHub every evening |
-| **Auto-cleanup** | Purges SwiftUI Previews, Derived Data, and Xcode caches every Sunday |
-| **One command** to add a project | Interactive folder picker, repo created automatically |
+| **Auto-push** | Commits and pushes any folder to GitHub every evening |
+| **Auto-cleanup** | Purges Xcode caches (SwiftUI Previews, Derived Data…) every Sunday |
+| **One command** to add a folder | Interactive picker, repo created automatically on GitHub |
+| **Any project type** | Xcode, Node, Python, or plain folders — you choose the .gitignore |
 | **No dependencies** | Pure bash + macOS launchd — no Homebrew, no Node, no Python |
 | **Never expires** | SSH key authentication — no token renewal |
 
@@ -45,7 +48,7 @@ At the end, it shows your SSH public key — **copy it and add it on [github.com
 
 ---
 
-## Adding a project
+## Adding a folder
 
 ```bash
 add-to-github.sh
@@ -54,11 +57,12 @@ add-to-github.sh
 First time only: it asks for a [GitHub Personal Access Token](https://github.com/settings/tokens/new) (scope: `repo`, no expiration) to create repos automatically.
 
 The script then:
-1. Shows all your project folders — pick one
-2. Initializes git + creates a proper Xcode `.gitignore`
-3. Creates a **private** repo on GitHub
-4. Pushes your code
-5. Adds the project to the nightly sync list
+1. Shows all your folders (Desktop, Documents, Developer…) — pick one
+2. Asks what type of project it is (Xcode, Node, Python, or basic)
+3. Initializes git + creates the right `.gitignore`
+4. Creates a **private** repo on GitHub
+5. Pushes your files
+6. Adds the folder to the nightly sync list
 
 ---
 
